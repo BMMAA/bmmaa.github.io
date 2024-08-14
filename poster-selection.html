@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Poster Size - KI-Posters</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Styling the header and navigation */
+        header {
+            background-color: #333;
+            padding: 20px;
+        }
+
+        .logo {
+            color: #fff;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links li {
+            display: inline;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+
+        .cta {
+            padding: 10px 20px;
+    border: 2px solid white;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+        }
+
+        /* Main content styling */
+        .selection-page {
+            padding: 40px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .image-preview img {
+            max-width: 300px;
+            border-radius: 10px;
+            border: 2px solid #28a745;
+        }
+
+        #poster-options {
+            display: inline-block;
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #28a745;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+            color: #333;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        
+        .buy-btn, .back-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    text-align: center;
+}
+
+.back-btn {
+    margin-top: 10px; /* Add some spacing if needed */
+    width: calc(100% - 40px); /* Ensure it's the same width minus padding of the container */
+    max-width: 300px; /* Match the max-width of the Buy Now button */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.buy-btn:hover, .back-btn:hover {
+    background-color: #218838;
+}
+
+
+
+        /* Footer styling */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">KI-POSTERS</div>
+            <ul class="nav-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <a href="index.html#products" class="cta">Products</a>
+        </nav>
+    </header>
+
+    <main class="selection-page">
+        <section class="poster-selection">
+            <h2>Select Your Poster Size</h2>
+            <div class="image-preview">
+                <img id="selected-image" src="" alt="Selected Image">
+            </div>
+            <form id="poster-options" action="/purchase-poster" method="post">
+                <label for="poster-size">Choose a size:</label>
+                <select id="poster-size" name="poster-size">
+                    <option value="small">Small (12x18 inches) - $20</option>
+                    <option value="medium">Medium (18x24 inches) - $35</option>
+                    <option value="large">Large (24x36 inches) - $50</option>
+                </select>
+
+                <input type="hidden" id="image-path" name="image-path" value="">
+
+                <button type="submit" class="buy-btn">Buy Now</button>
+            </form>
+
+            <button class="back-btn" id="go-back">Go Back</button>
+        </section>
+    </main>
+    
+    <footer>
+        <p>© 2024 KI-Posters. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const imagePath = params.get('image');
+            const referrer = document.referrer;  // Get the referring page
+
+            if (imagePath) {
+                selectImage(imagePath);
+            }
+
+            // Set up the "Go Back" button to go to the previous page
+            document.getElementById('go-back').addEventListener('click', function() {
+                if (referrer) {
+                    window.location.href = referrer;
+                } else {
+                    window.history.back(); // Fallback if no referrer is available
+                }
+            });
+        });
+
+        // Function to set the selected image
+        function selectImage(imageSrc) {
+            document.getElementById('selected-image').src = imageSrc;
+            document.getElementById('image-path').value = imageSrc;
+        }
+    </script>
+</body>
+</html>

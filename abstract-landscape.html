@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstract Landscapes - KI-Posters</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">KI-POSTERS</div>
+            <ul class="nav-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <a href="index.html#products" class="cta">Products</a>
+        </nav>
+    </header>
+
+    <main class="product-page">
+        <section class="prompt-section">
+            <h2>Generate Your Custom Abstract Landscapes Poster</h2>
+            <form action="/generate-image" method="post" id="generate-form">
+                <label for="prompt">Enter your prompt:</label>
+                <div class="input-group">
+                    <input type="text" id="prompt" name="prompt" placeholder="Create a vibrant abstract landscape with flowing, organic shapes and bold, contrasting colors. Include swirling patterns that suggest mountains, valleys, and a dynamic sky." required>
+                    <button type="submit" class="generate-btn">Generate Image</button>
+                </div>
+            </form>
+            <div class="generated-image">
+                <div id="loading-spinner" style="display:none;">
+                    <img src="images/spinner.gif" alt="Loading..." />
+                </div>
+                <img id="generated-image" src="" alt="Your generated image will appear here" style="cursor:pointer;">
+            </div>
+        </section>
+        
+        <section class="suggestions-section">
+            <h3>Suggestions for Abstract Landscapes</h3>
+            <div class="suggestions-grid">
+                <div class="suggestion-item" onclick="selectImage('images/al-suggestion1.jpg')">
+                    <img src="images/al-suggestion1.jpg" alt="Suggestion 1">
+                    <p>Suggestion 1</p>
+                </div>
+                <div class="suggestion-item" onclick="selectImage('images/al-suggestion2.jpg')">
+                    <img src="images/al-suggestion2.jpg" alt="Suggestion 2">
+                    <p>Suggestion 2</p>
+                </div>
+                <div class="suggestion-item" onclick="selectImage('images/al-suggestion3.jpg')">
+                    <img src="images/al-suggestion3.jpg" alt="Suggestion 3">
+                    <p>Suggestion 3</p>
+                </div>
+                <!-- Add more suggestions as needed -->
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>© 2024 KI-Posters. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a saved image in localStorage
+            const savedImage = localStorage.getItem('generatedImage');
+            if (savedImage) {
+                const generatedImage = document.getElementById('generated-image');
+                generatedImage.src = savedImage;
+                generatedImage.style.display = 'block'; // Show the image
+                generatedImage.addEventListener('click', function() {
+                    selectImage(savedImage); // Select the image when clicked
+                });
+            }
+        });
+
+        document.getElementById('generate-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Show the loading spinner
+            document.getElementById('loading-spinner').style.display = 'block';
+            document.getElementById('generated-image').style.display = 'none'; // Hide the image until it's generated
+
+            const formData = new FormData(this);
+
+            fetch('/generate-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // Hide the loading spinner
+                document.getElementById('loading-spinner').style.display = 'none';
+
+                if (blob.type.startsWith('image/')) {
+                    const url = URL.createObjectURL(blob);
+                    const generatedImage = document.getElementById('generated-image');
+                    generatedImage.src = url;
+                    generatedImage.style.display = 'block'; // Show the image
+                    generatedImage.addEventListener('click', function() {
+                        selectImage(url); // Select the image when clicked
+                    });
+
+                    // Save the generated image in localStorage
+                    localStorage.setItem('generatedImage', url);
+                } else {
+                    blob.text().then(text => {
+                        let errorMessage = 'Failed to generate image. Please try again.';
+                        try {
+                            const errorObj = JSON.parse(text);
+                            errorMessage = errorObj.error || errorMessage;
+                        } catch (e) {
+                            errorMessage = text;
+                        }
+                        alert(errorMessage);
+                        document.getElementById('generated-image').style.display = 'block'; // Show the image
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while generating the image.');
+                // Hide the loading spinner
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('generated-image').style.display = 'block'; // Show the image
+            });
+        });
+
+        // Function to redirect to poster selection page with the selected image
+        function selectImage(imagePath) {
+            window.location.href = `poster-selection.html?image=${encodeURIComponent(imagePath)}`;
+        }
+
+        // Make suggestion items clickable
+        document.querySelectorAll('.suggestion-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const imageSrc = this.querySelector('img').src;
+                selectImage(imageSrc);
+            });
+        });
+    </script>
+</body>
+</html>
